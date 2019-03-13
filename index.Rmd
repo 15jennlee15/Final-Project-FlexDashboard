@@ -9,14 +9,18 @@ output:
 ---
 
 ```{r setup, include=FALSE}
+
+#install.packages("flexdashboard")
+#install.packages("tidyverse")
+#install.packages("rio")
+#install.packages("here")
+#install.packages("rcartocolor")
+
 library(flexdashboard)
 library(tidyverse)
-library(dplyr)
 library(rio)
 library(here)
-library(ggrepel)
-
-
+library(rcartocolor)
 
 data1 <- import(here("data", "Full_Data.csv")) 
 
@@ -40,7 +44,7 @@ Participants were assessed in a lab where they completed tasks and self-report m
 
 # Visualization 1
 
-Column {data-width=500 .tabset}
+Column {data-width=450 .tabset}
 -----------------------------------------------------------------------
 
 ### Version 1
@@ -49,7 +53,7 @@ Column {data-width=500 .tabset}
 
 #Clean Data to proper format
 HRV1 <- data1 %>%
-  gather(key = HRV_Segment, value = RSA, RSA_1, RSA_2, RSA_3, RSA_4, RSA_5, RSA_6, RSA_7, RSA_8, na.rm =TRUE) %>%
+  gather(key = HRV_Segment, value = RSA, RSA_1:RSA_8, na.rm =TRUE) %>%
   select(HRV_Segment, RSA, Group) %>%
   filter(Group != "NA") %>%
   group_by(Group, HRV_Segment) %>%
@@ -114,7 +118,7 @@ HRV1 %>%
 
 > Wahoo! Data has appeared.  At this point I feel like the visual is fairly successful, but can use some little tweaks to the design.  In my next batch of edits, I'll be defining the groups more clearly and adding some style changes.
 
-Column {data-width=500}
+Column {data-width=550}
 -----------------------------------------------------------------------
 
 ### Final Version
@@ -125,16 +129,19 @@ HRV1$Group <- recode(HRV1$Group, '1' = "Control Group", '2' = "BPD Group")
 
 plot1 <- HRV1 %>%
   ggplot(aes(HRV_Segment, RSA, group = Group)) +
-  geom_line(aes(color = Group)) +
+  geom_ribbon(aes(ymin = RSA - sd(RSA), ymax = RSA + sd(RSA)), alpha = 0.3) +
+  geom_line(aes(color = Group), 
+            size = 0.9) +
   theme_minimal() +
-  scale_color_viridis_d() +
-  ylim(6, 7) +
+  scale_color_carto_d(palette = "Burg") +
+  ylim(6,7) +
   labs(y = "HRV",
        x = "Segment (30 sec epochs)",
        title = "Heart Rate Variability Across Time for Women with Borderline 
-Personality Disorder vs A Control Group")
+Personality Disorder vs A Control Group")  
 
-plot1 + theme(plot.title = element_text(size = 8), panel.background = element_rect(fill = "gray80")) 
+plot1 + theme(plot.title = element_text(size = 12, hjust = 0.5),
+              panel.background = element_rect(color = "gray80"))
 ```
 
 
@@ -142,7 +149,65 @@ plot1 + theme(plot.title = element_text(size = 8), panel.background = element_re
 
 # Visualization 2
 
-Column {data-width=500 .tabset}
+Column {data-width=500 .storyboard}
 -----------------------------------------------------------------------
 
 ### Version 1
+
+```{r}
+data1$Group <- as.factor(data1$Group)
+data1$Group <- recode(data1$Group, '1' = "Control Group", '2' = "BPD Group")
+
+data1 <- data1 %>%
+  mutate(HAMA_C = scale(HAMA, center = TRUE, scale = TRUE),
+         PHQ_C = scale(PHQ, center = TRUE, scale = TRUE),
+         DERS_C = scale(DERS, center = TRUE, scale = TRUE))
+
+#cleaning data
+Symptoms <- data1 %>%
+  gather(key = Symptom, value = Score, HAMA_C, PHQ_C, DERS_C, na.rm = TRUE) %>%
+  mutate(Symptom = recode(Symptom, 
+                           "HAMA_C" = "Anxiety",
+                           "PHQ_C" = "Depression",
+                           "DERS_C" = "Emotion Dysregulation")) %>%
+  group_by(Group, Symptom) %>%
+  summarise(Score = mean(Score)) %>%
+  filter(Group != "NA")
+
+Symptoms %>%
+  ggplot(aes(Symptom, Score, fill = Group)) +
+  geom_col(position = "dodge") +
+  theme_minimal() +
+  labs(title = "Mental Health Profiles of Clinical and Non-Clinical Samples",
+       x = "Symptom",
+       y = "Score (standardized)")
+
+```
+
+
+### Final Version
+
+```{r}
+
+plot2 <- Symptoms %>%
+  ggplot(aes(Symptom, Score, fill = Group)) +
+  geom_col(position = "dodge", alpha = 0.8) +
+  scale_fill_viridis_d() +
+  theme_minimal() +
+  labs(title = "Mental Health Profiles of Clinical and Non-Clinical Samples",
+       x = "Symptom",
+       y = "Score (standardized)") +
+  geom_hline(aes(yintercept = 0),
+             color = "black",
+             size = 0.4,
+             lty = "dashed")
+
+
+plot2 + theme(plot.title = element_text(size = 12, hjust = 0.5),
+              panel.background = element_rect(fill = "gray80"))
+```
+
+```{r}
+
+```
+
