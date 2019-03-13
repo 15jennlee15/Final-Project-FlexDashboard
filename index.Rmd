@@ -2,6 +2,8 @@
 title: "EDLD 610 Final Project Dashboard for Jenn Lewis"
 output: 
   flexdashboard::flex_dashboard:
+    storyboard: true
+    theme: cerulean
     orientation: columns
     vertical_layout: fill
 ---
@@ -118,23 +120,29 @@ Column {data-width=500}
 ### Final Version
 
 ```{r}
-pal <- c(
-  "1" = "orange",
-  "2" = "purple"
-)
 
 HRV1$Group <- recode(HRV1$Group, '1' = "Control Group", '2' = "BPD Group")
 
-HRV1 %>%
+plot1 <- HRV1 %>%
   ggplot(aes(HRV_Segment, RSA, group = Group)) +
   geom_line(aes(color = Group)) +
   theme_minimal() +
-  scale_fill_manual(values = pal,
-                    limit = names(pal)) +
-  #ylim(0, 7) +
+  scale_color_viridis_d() +
+  ylim(6, 7) +
   labs(y = "HRV",
        x = "Segment (30 sec epochs)",
-       title = "Heart Rate Variability Across Time for Women with Borderline Personality
-       Disorder vs A Control Group")
+       title = "Heart Rate Variability Across Time for Women with Borderline 
+Personality Disorder vs A Control Group")
 
+plot1 + theme(plot.title = element_text(size = 8), panel.background = element_rect(fill = "gray80")) 
 ```
+
+
+> 
+
+# Visualization 2
+
+Column {data-width=500 .tabset}
+-----------------------------------------------------------------------
+
+### Version 1
