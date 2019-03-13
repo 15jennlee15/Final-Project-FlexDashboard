@@ -15,12 +15,16 @@ output:
 #install.packages("rio")
 #install.packages("here")
 #install.packages("rcartocolor")
+#install.packages("devtools")
+#install_github("datalorax/sundry")
 
 library(flexdashboard)
 library(tidyverse)
 library(rio)
 library(here)
 library(rcartocolor)
+library(devtools)
+library(sundry)
 
 data1 <- import(here("data", "Full_Data.csv")) 
 
@@ -57,10 +61,13 @@ HRV1 <- data1 %>%
   select(HRV_Segment, RSA, Group) %>%
   filter(Group != "NA") %>%
   group_by(Group, HRV_Segment) %>%
-  summarise(RSA = mean(RSA)) 
+  summarise(RSA_mean = mean(RSA),
+            se_RSA = se(RSA))
+
+
 
 HRV1 %>%
-  ggplot(aes(HRV_Segment, RSA, color = Group)) +
+  ggplot(aes(HRV_Segment, RSA_mean, color = Group)) +
   geom_line() +
   theme_minimal() +
   #ylim(0, 7) +
@@ -90,7 +97,7 @@ mutate(HRV_Segment = recode(HRV_Segment,
                               "RSA_7" = "7",
                               "RSA_8" = "8"))
 HRV1 %>%
-  ggplot(aes(HRV_Segment, RSA, color = Group)) +
+  ggplot(aes(HRV_Segment, RSA_mean, color = Group)) +
   geom_line() +
   theme_minimal() +
   #ylim(0, 7) +
@@ -106,7 +113,7 @@ HRV1 %>%
 ```{r}
 
 HRV1 %>%
-  ggplot(aes(HRV_Segment, RSA, group = Group)) +
+  ggplot(aes(HRV_Segment, RSA_mean, group = Group)) +
   geom_line(aes(color = Group)) +
   theme_minimal() +
   #ylim(0, 7) +
@@ -128,8 +135,10 @@ Column {data-width=550}
 HRV1$Group <- recode(HRV1$Group, '1' = "Control Group", '2' = "BPD Group")
 
 plot1 <- HRV1 %>%
-  ggplot(aes(HRV_Segment, RSA, group = Group)) +
-  geom_ribbon(aes(ymin = RSA - sd(RSA), ymax = RSA + sd(RSA)), alpha = 0.3) +
+  ggplot(aes(HRV_Segment, RSA_mean, group = Group)) +
+  geom_ribbon(aes(ymin = RSA_mean - 1.96*se_RSA, 
+                  ymax = RSA_mean + 1.96*se_RSA), 
+                  alpha = 0.3) +
   geom_line(aes(color = Group), 
             size = 0.9) +
   theme_minimal() +
@@ -141,7 +150,7 @@ plot1 <- HRV1 %>%
 Personality Disorder vs A Control Group")  
 
 plot1 + theme(plot.title = element_text(size = 12, hjust = 0.5),
-              panel.background = element_rect(color = "gray80"))
+              panel.background = element_rect(fill = "gray80"))
 ```
 
 
