@@ -125,16 +125,39 @@ HRV1 %>%
 
 > Wahoo! Data has appeared.  At this point I feel like the visual is fairly successful, but can use some little tweaks to the design.  In my next batch of edits, I'll be defining the groups more clearly and adding some style changes.
 
-Column {data-width=550}
+Column {data-width=550 .tabset}
 -----------------------------------------------------------------------
 
 ### Final Version
 
 ```{r}
-
 HRV1$Group <- recode(HRV1$Group, '1' = "Control Group", '2' = "BPD Group")
 
 plot1 <- HRV1 %>%
+  ggplot(aes(HRV_Segment, RSA_mean, group = Group)) +
+  geom_ribbon(aes(ymin = RSA_mean - 1.96*se_RSA, 
+                  ymax = RSA_mean + 1.96*se_RSA), 
+                  alpha = 0.2) +
+  geom_line(aes(color = Group), 
+            size = 0.9) +
+  theme_minimal() +
+  scale_color_carto_d(palette = "Burg") +
+  ylim(1,8) +
+  labs(y = "HRV",
+       x = "Segment (30 sec epochs)",
+       title = "Heart Rate Variability Across Time for Women with Borderline 
+Personality Disorder vs A Control Group")  
+
+plot1 + theme(plot.title = element_text(size = 12, hjust = 0.5))
+```
+
+> For my final edits, I improved a lot of basic visual aspects of the plot - line width, color, text size, title centering etc. I also incorporated edits from my peer review which suggested showing some uncertainty.  I created two versions of the final visual - 1 with the full y-axis and one zoomed in.  This plot shows the entire y-axis.  You'll notice there is a lot of white space here because there are no data points in the lower range, which is not visually appealing.  The benefit of this however, is that it more accurately shows the scale of the axis and doesn't exaggerate differences between groups.
+
+### Final Version Zoomed In
+
+```{r}
+
+plot1.5 <- HRV1 %>%
   ggplot(aes(HRV_Segment, RSA_mean, group = Group)) +
   geom_ribbon(aes(ymin = RSA_mean - 1.96*se_RSA, 
                   ymax = RSA_mean + 1.96*se_RSA), 
@@ -143,18 +166,18 @@ plot1 <- HRV1 %>%
             size = 0.9) +
   theme_minimal() +
   scale_color_carto_d(palette = "Burg") +
-  ylim(6,7) +
+  ylim(5.5,7.5) +
   labs(y = "HRV",
        x = "Segment (30 sec epochs)",
        title = "Heart Rate Variability Across Time for Women with Borderline 
 Personality Disorder vs A Control Group")  
 
-plot1 + theme(plot.title = element_text(size = 12, hjust = 0.5),
-              panel.background = element_rect(fill = "gray80"))
+plot1.5 + theme(plot.title = element_text(size = 12, hjust = 0.5))
+            
 ```
 
 
-> 
+> In this version of the finalized plot, I've limited the y-axis to show only a select range.  This allows you to see the group differences more clearly.  A disadvantage to this, is that it may exxagerate differences, making things appear significantly different even though they are actually quite close.  Because this data is visualizing HRV however, it makes sense to limit the range as there are physiological limitations to how the scale extends (only dead people would have an HRV at 0). Also differences in HRv can be small but quite meaninful at times.
 
 # Visualization 2
 
