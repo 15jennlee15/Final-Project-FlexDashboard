@@ -38,7 +38,7 @@ Participants were assessed in a lab where they completed tasks and self-report m
 
 # Visualization 1
 
-Column {data-width=350}
+Column {data-width=500 .tabset}
 -----------------------------------------------------------------------
 
 ### Version 1
@@ -93,10 +93,9 @@ HRV1 %>%
        title = "HRV across Time for BPD vs Control Group")
 ```
 
-Column {data-width=650}
------------------------------------------------------------------------
+> After making these changes I saw improvements, but there was also another obvious problem that popped up - no data showing.  I sought out some help for this and discovered that I was mapping things in the aesthetics wrong.  I needed to define "group" rather than color is the main plot aesthetic and define color in the geom.
 
-### Final Version
+### Version 3
 
 ```{r}
 
@@ -111,3 +110,31 @@ HRV1 %>%
 
 ```
 
+> Wahoo! Data has appeared.  At this point I feel like the visual is fairly successful, but can use some little tweaks to the design.  In my next batch of edits, I'll be defining the groups more clearly and adding some style changes.
+
+Column {data-width=500}
+-----------------------------------------------------------------------
+
+### Final Version
+
+```{r}
+pal <- c(
+  "1" = "orange",
+  "2" = "purple"
+)
+
+HRV1$Group <- recode(HRV1$Group, '1' = "Control Group", '2' = "BPD Group")
+
+HRV1 %>%
+  ggplot(aes(HRV_Segment, RSA, group = Group)) +
+  geom_line(aes(color = Group)) +
+  theme_minimal() +
+  scale_fill_manual(values = pal,
+                    limit = names(pal)) +
+  #ylim(0, 7) +
+  labs(y = "HRV",
+       x = "Segment (30 sec epochs)",
+       title = "Heart Rate Variability Across Time for Women with Borderline Personality
+       Disorder vs A Control Group")
+
+```
