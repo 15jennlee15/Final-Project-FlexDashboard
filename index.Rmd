@@ -214,6 +214,8 @@ Symptoms %>%
 
 ```
 
+> This was my first attempt at this visual. A pretty decent start. I recognized the need for effective labelling and went ahead and did that right away so that the axes labels, factors, and group are all easily determinable. While I think this is a good first attempt, I wanted to improve some of the aesthetics and I worked on that in my next iteration.
+
 
 ### Version 2
 
@@ -236,6 +238,8 @@ plot2 <- Symptoms %>%
 plot2 + theme(plot.title = element_text(size = 12, hjust = 0.5),
               panel.background = element_rect(fill = "gray80"))
 ```
+
+> For this version, I worked on improving some visual aesthetics - changing the color scale, adjusting transparency, centering the title, and changing the panel background.  Also at the recommendation of one of peer reviews I created a line at the mean to highlight that more clearly in the plot.
 
 ### Final Version
 
@@ -262,6 +266,9 @@ plot2 <- Symptoms %>%
 plot2 + theme(plot.title = element_text(size = 12, hjust = 0.5),
               panel.background = element_rect(fill = "gray80"))
 ```
+
+> In this final version I added error bars to visualize uncertainty.  This seems effective however one of my error bars is not showing up and I can see that is because one of the standard erros is "NA".  Not sure what created this or how to fix it at this point.
+
 
 # Visualization 3
 
