@@ -270,12 +270,9 @@ plot2 + theme(plot.title = element_text(size = 12, hjust = 0.5),
 > In this final version I added error bars to visualize uncertainty.  This seems effective however one of my error bars is not showing up and I can see that is because one of the standard erros is "NA".  Not sure what created this or how to fix it at this point.
 
 
-# Visualization 3
+# Visualization 3 {.storyboard}
 
-Column {data-width=500 .storyboard}
------------------------------------------------------------------------
-
-### Version 1
+### Version 1 {data-commentary-width=200}
 
 ```{r}
 data1 %>%
@@ -291,7 +288,11 @@ data1 %>%
 
 ```
 
-### Version 2
+***
+
+My initial attempt to make a scatterplot showing the relationship between a self-reported measure of emotion regulations (DERS) and inhibitory control as measured by the Stroop for both a BPD sample and healthy control sample. As I examine this visual, I notice the outlier in the bottom corner, I also believe I can adjust some of the styling.  The colors specifically the yellow may be hard to see.
+
+### Final Version {data-commentary-width=200}
 
 ```{r}
 plot3 <- data1 %>%
@@ -311,3 +312,7 @@ plot3 + theme(plot.title = element_text(size = 12, hjust = 0.5))
 
 ```
 
+***
+In this final version, I adjusted the colors to stand out more.  I also took some of the suggestions from my peer review and removed the outlier, and added a caption explaining what High DERS represents. I also made some stylistic changes.
+
+This graph visualizes the relationship between inhibitory control and emotion regulation in women with and without BPD.  
