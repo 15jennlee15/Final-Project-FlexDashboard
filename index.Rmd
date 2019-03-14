@@ -179,10 +179,8 @@ plot1.5 + theme(plot.title = element_text(size = 12, hjust = 0.5))
 
 > In this version of the finalized plot, I've limited the y-axis to show only a select range.  This allows you to see the group differences more clearly.  A disadvantage to this, is that it may exxagerate differences, making things appear significantly different even though they are actually quite close.  Because this data is visualizing HRV however, it makes sense to limit the range as there are physiological limitations to how the scale extends (only dead people would have an HRV at 0). Also differences in HRv can be small but quite meaninful at times.
 
-# Visualization 2
+# Visualization 2 { .storyboard}
 
-Column {data-width=500 .storyboard}
------------------------------------------------------------------------
 
 ### Version 1
 
@@ -203,11 +201,11 @@ Symptoms <- data1 %>%
                            "PHQ_C" = "Depression",
                            "DERS_C" = "Emotion Dysregulation")) %>%
   group_by(Group, Symptom) %>%
-  summarise(Score = mean(Score)) %>%
+  summarise(Score_mean = mean(Score), Score_se = se(Score)) %>%
   filter(Group != "NA")
 
 Symptoms %>%
-  ggplot(aes(Symptom, Score, fill = Group)) +
+  ggplot(aes(Symptom, Score_mean, fill = Group)) +
   geom_col(position = "dodge") +
   theme_minimal() +
   labs(title = "Mental Health Profiles of Clinical and Non-Clinical Samples",
@@ -217,12 +215,12 @@ Symptoms %>%
 ```
 
 
-### Final Version
+### Version 2
 
 ```{r}
 
 plot2 <- Symptoms %>%
-  ggplot(aes(Symptom, Score, fill = Group)) +
+  ggplot(aes(Symptom, Score_mean, fill = Group)) +
   geom_col(position = "dodge", alpha = 0.8) +
   scale_fill_viridis_d() +
   theme_minimal() +
@@ -239,7 +237,70 @@ plot2 + theme(plot.title = element_text(size = 12, hjust = 0.5),
               panel.background = element_rect(fill = "gray80"))
 ```
 
+### Final Version
+
 ```{r}
+plot2 <- Symptoms %>%
+  ggplot(aes(Symptom, Score_mean, fill = Group)) +
+  geom_col(position = "dodge", 
+           alpha = 0.8) +
+  geom_errorbar(aes(ymin = Score_mean - 1.96*Score_se,
+                    ymax = Score_mean + 1.96*Score_se),
+                color = "gray40",
+                position = position_dodge(.9)) +
+  scale_fill_viridis_d() +
+  theme_minimal() +
+  labs(title = "Mental Health Profiles of Clinical and Non-Clinical Samples",
+       x = "Symptom",
+       y = "Score (standardized)") +
+  geom_hline(aes(yintercept = 0),
+             color = "black",
+             size = 0.4,
+             lty = "dashed")
+
+
+plot2 + theme(plot.title = element_text(size = 12, hjust = 0.5),
+              panel.background = element_rect(fill = "gray80"))
+```
+
+# Visualization 3
+
+Column {data-width=500 .storyboard}
+-----------------------------------------------------------------------
+
+### Version 1
+
+```{r}
+data1 %>%
+  ggplot(aes(DERS, ColorWord_Score, color = Group)) +
+  geom_point() +
+  scale_colour_viridis_d() +
+  geom_smooth(method = "lm") +
+  theme_minimal() +
+  labs(title = "The Relationship Between Emotion Regulation and Inhibitory Control",
+       x = "Emotion Regulation Score (DERS)",
+       y = "Inhibitory Control (Stroop Score)")
+  
+
+```
+
+### Version 2
+
+```{r}
+plot3 <- data1 %>%
+  filter(Group != "NA" & ColorWord_Score > 20) %>%
+  ggplot(aes(DERS, ColorWord_Score, color = Group)) +
+  geom_point(alpha = 0.7) +
+  scale_colour_carto_d() +
+  geom_smooth(method = "lm", alpha = 0.2) +
+  theme_minimal() +
+  labs(title = "The Relationship Between Emotion Regulation and Inhibitory Control",
+       x = "Emotion Regulation Score (DERS)",
+       y = "Inhibitory Control (Stroop Score)",
+       caption = "*Higher scores on the DERS represents more Emotion Regulation Difficulties")
+
+plot3 + theme(plot.title = element_text(size = 12, hjust = 0.5))
+  
 
 ```
 
